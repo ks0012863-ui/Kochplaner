@@ -213,28 +213,79 @@ function renderApp() {
   });
 }
 
-function renderPlan(el) {
-  el.innerHTML = `<h2>Dein Wochenplan</h2>
-    <p>Wähle für jeden Tag ein Gericht aus deinem Rezeptbuch.</p>
-    ${days.map((day,i)=>{
-      const entry=mealPlan.find(x=>x.day===i);
-      return `<label>${day}</label>
-        <select data-day="${i}">
-          <option value="">Kein Gericht</option>
-          ${recipes.map(r=>`<option value="${escapeHTML(r.id)}"
-            ${entry?.recipeId===r.id?"selected":""}>
-            ${escapeHTML(r.name)}
-          </option>`).join("")}
-        </select>`;
-    }).join("")}`;
 
-  el.querySelectorAll("[data-day]").forEach(select=>{
-    select.onchange=async()=>{
-      const day=Number(select.dataset.day);
-      const ref=doc(db,"households",householdId,"mealPlan",String(day));
-      try {
-        await setDoc(ref,{day,recipeId:select.value});
-      } catch(error) { showError(error); }
+function renderPlan(el) {
+  el.innerHTML = `
+    <h2>Dein Wochenplan</h2>
+    <p>Wähle ein Gericht und die Personenzahl für jeden Tag.</p>
+    ${days.map((day, i) => {
+      const entry = mealPlan.find(x => x.day === i);
+      const persons = entry?.persons ?? 2;
+
+      return `
+        <div class="plan-day">
+          <label>${day}</label>
+          <select data-day="${i}">
+            <option value="">Kein Gericht</option>
+            ${recipes.map(r => `
+              <option value="${escapeHTML(r.id)}"
+                ${entry?.recipeId === r.id ? "selected" : ""}>
+                ${escapeHTML(r.name)}
+              </option>
+            `).join("")}
+          </select>
+
+          <div class="persons-control">
+            <span>Personen:</span>
+            <button type="button" data-minus="${i}">−</button>
+            <strong id="persons-${i}">${persons}</strong>
+            <button type="button" data-plus="${i}">+</button>
+          </div>
+        </div>
+      `;
+    }).join("")}
+  `;
+
+  async function saveDay(day, changes) {
+    const previous = mealPlan.find(x => x.day === day);
+    const ref = doc(db, "households", householdId,
+                    "mealPlan", String(day));
+
+    try {
+      await setDoc(ref, {
+        day,
+        recipeId: previous?.recipeId ?? "",
+        persons: previous?.persons ?? 2,
+        ...changes
+      });
+    } catch (error) {
+      showError(error);
+    }
+  }
+
+  el.querySelectorAll("[data-day]").forEach(select => {
+    select.onchange = () => {
+      saveDay(Number(select.dataset.day), {
+        recipeId: select.value
+      });
+    };
+  });
+
+  el.querySelectorAll("[data-minus]").forEach(button => {
+    button.onclick = () => {
+      const day = Number(button.dataset.minus);
+      const previous = mealPlan.find(x => x.day === day);
+      const persons = Math.max(1, (previous?.persons ?? 2) - 1);
+      saveDay(day, { persons });
+    };
+  });
+
+  el.querySelectorAll("[data-plus]").forEach(button => {
+    button.onclick = () => {
+      const day = Number(button.dataset.plus);
+      const previous = mealPlan.find(x => x.day === day);
+      const persons = Math.min(12, (previous?.persons ?? 2) + 1);
+      saveDay(day, { persons });
     };
   });
 }
