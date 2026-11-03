@@ -46,6 +46,26 @@ const showError = error => {
   alert(error?.message || "Ein Fehler ist aufgetreten.");
 };
 
+function scaleIngredients(ingredients, basePersons, persons) {
+  const factor = persons / (Number(basePersons) || 2);
+
+  return String(ingredients || "")
+    .split("\n")
+    .map(line => {
+      const match = line.trim().match(
+        /^(\d+(?:[.,]\d+)?)\s*(.*)$/
+      );
+
+      if (!match) return line;
+
+      const original = Number(match[1].replace(",", "."));
+      const scaled = Math.round(original * factor * 100) / 100;
+
+      return `${scaled.toLocaleString("de-DE")} ${match[2]}`;
+    })
+    .join("\n");
+}
+
 const randomId = () => crypto.randomUUID();
 const token = () => Array.from(crypto.getRandomValues(new Uint8Array(32)))
   .map(b => b.toString(16).padStart(2,"0")).join("");
@@ -293,6 +313,20 @@ function renderPlan(el) {
 function renderRecipes(el) {
   el.innerHTML = `
     <h2>Unsere Rezepte</h2>
+    
+<p>Lege fest, für wie viele Personen das Rezept ursprünglich gedacht ist.</p>
+<label for="basePersons">Rezept für wie viele Personen?</label>
+<input
+  id="basePersons"
+  name="basePersons"
+  type="number"
+  min="1"
+  max="12"
+  value="2"
+  required
+  form="recipeForm"
+>
+
     <form id="recipeForm">
       <input name="name" placeholder="Gericht" required>
       <textarea name="ingredients" rows="5"
@@ -304,22 +338,59 @@ function renderRecipes(el) {
     <hr>
     ${recipes.map(r=>`<article class="recipe">
       <h3>${escapeHTML(r.name)}</h3>
-      <p>${escapeHTML(r.ingredients)}</p>
-      <p>${escapeHTML(r.steps)}</p>
+    
+<label>Personen:</label>
+<input
+  type="number"
+  min="1"
+  max="12"
+  value="${r.basePersons || 2}"
+  data-recipe-persons="${escapeHTML(r.id)}"
+>
+<p data-recipe-ingredients="${escapeHTML(r.id)}">
+  ${escapeHTML(r.ingredients)}
+</p>
+<p>${escapeHTML(r.steps)}</p>
+
       ${button("Zutaten zur Einkaufsliste","ingredients",`data-id="${escapeHTML(r.id)}"`)}
       ${button("Löschen","delete-recipe",`data-id="${escapeHTML(r.id)}"`)}
     </article>`).join("")}`;
+
+el.querySelectorAll("[data-recipe-persons]").forEach(input => {
+  input.oninput = () => {
+    const recipe = recipes.find(r => r.id === input.dataset.recipePersons);
+    if (!recipe) return;
+
+    const persons = Number(input.value);
+    if (!Number.isInteger(persons) || persons < 1 || persons > 12) return;
+
+    const output = Array.from(
+      el.querySelectorAll("[data-recipe-ingredients]")
+    ).find(p => p.dataset.recipeIngredients === recipe.id);
+
+    if (output) {
+      output.textContent = scaleIngredients(
+        recipe.ingredients,
+        recipe.basePersons || 2,
+        persons
+      );
+    }
+  };
+});
 
   document.getElementById("recipeForm").onsubmit=async e=>{
     e.preventDefault();
     const f=e.target;
     try {
-      await addDoc(collection(db,"households",householdId,"recipes"),{
-        name:f.elements.name.value.trim(),
-        ingredients:f.elements.ingredients.value.trim(),
-        steps:f.elements.steps.value.trim(),
-        createdAt:serverTimestamp()
-      });
+      
+await addDoc(collection(db,"households",householdId,"recipes"),{
+  name:f.elements.name.value.trim(),
+  basePersons:Number(f.elements.basePersons.value) || 2,
+  ingredients:f.elements.ingredients.value.trim(),
+  steps:f.elements.steps.value.trim(),
+  createdAt:serverTimestamp()
+});
+
       f.reset();
     } catch(error) { showError(error); }
   };
@@ -329,7 +400,21 @@ function renderRecipes(el) {
       const r=recipes.find(x=>x.id===b.dataset.id);
       if(!r)return;
       try {
-        for(const line of r.ingredients.split("\n").filter(x=>x.trim())){
+        
+const personsInput = Array.from(
+  el.querySelectorAll("[data-recipe-persons]")
+).find(input => input.dataset.recipePersons === r.id);
+
+const persons = Number(personsInput?.value) || r.basePersons || 2;
+
+const adjustedIngredients = scaleIngredients(
+  r.ingredients,
+  r.basePersons || 2,
+  persons
+);
+
+for (const line of adjustedIngredients.split("\n").filter(x => x.trim())) {
+
           await addDoc(collection(db,"households",householdId,"shoppingList"),{
             name:line.trim(),quantity:"",checked:false,
             source:"recipe",createdAt:serverTimestamp()
