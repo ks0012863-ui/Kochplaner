@@ -601,6 +601,32 @@ for (const line of adjustedIngredients.split("\n").filter(x => x.trim())) {
   });
 }
 
+function weeklyIngredientId(item) {
+  return encodeURIComponent(
+    `${item.unit}|${item.name.toLowerCase().trim()}`
+  );
+}
+
+async function toggleWeeklyIngredient(item, checked) {
+  const id = weeklyIngredientId(item);
+
+  try {
+    await setDoc(
+      doc(db, "households", householdId, "shoppingList", id),
+      {
+        name: item.name,
+        quantity: "",
+        checked,
+        source: "weekly",
+        weeklyKey: id
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    showError(error);
+  }
+}
+
 function getWeeklyIngredients() {
   const totals = new Map();
 
