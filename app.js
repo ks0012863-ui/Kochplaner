@@ -664,8 +664,32 @@ function getWeeklyIngredients() {
   );
 }
 
+
 function renderShopping(el) {
+  const weeklyIngredients = getWeeklyIngredients();
+
   el.innerHTML=`
+    <h2>Automatisch aus deinem Wochenplan</h2>
+    <p>Diese Zutaten werden aus den ausgewählten Gerichten und Personenzahlen berechnet.</p>
+
+    <ul class="shopping-list">
+      ${weeklyIngredients.length
+        ? weeklyIngredients.map(item => `
+          <li>
+            <span>
+              ${escapeHTML(
+                item.unit === "Eintrag"
+                  ? `${item.quantity} × ${item.name}`
+                  : `${item.quantity.toLocaleString("de-DE")} ${item.unit} ${item.name}`
+              )}
+            </span>
+          </li>
+        `).join("")
+        : "<li>Wähle zuerst Gerichte im Wochenplan aus.</li>"
+      }
+    </ul>
+    <hr>
+
     <h2>Gemeinsame Einkaufsliste</h2>
     <form id="addItem">
       <input name="name" placeholder="Artikel, z. B. Milch" required>
