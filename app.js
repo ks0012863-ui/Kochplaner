@@ -601,6 +601,69 @@ for (const line of adjustedIngredients.split("\n").filter(x => x.trim())) {
   });
 }
 
+function getWeeklyIngredients() {
+  const totals = new Map();
+
+  for (const entry of mealPlan) {
+    if (!entry.recipeId) continue;
+
+    const recipe = recipes.find(r => r.id === entry.recipeId);
+    if (!recipe) continue;
+
+    const persons = Number(entry.persons) || 2;
+    const adjusted = scaleIngredients(
+      recipe.ingredients,
+      recipe.basePersons || 2,
+      persons
+    );
+
+    for (const line of adjusted.split("\n")) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const match = trimmed.match(
+        /^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|l|EL|TL|Stück|Dose|Dosen)?\s+(.+)$/i
+      );
+
+      if (!match) {
+        const key = trimmed.toLowerCase();
+        const previous = totals.get(key);
+        if (previous) previous.quantity += 1;
+        else totals.set(key, {
+          name: trimmed,
+          quantity: 1,
+          unit: "Eintrag"
+        });
+        continue;
+      }
+
+      let quantity = Number(match[1].replace(",", "."));
+      let unit = (match[2] || "Stück").toLowerCase();
+      const name = match[3].trim();
+
+      if (unit === "kg") {
+        quantity *= 1000;
+        unit = "g";
+      }
+      if (unit === "l") {
+        quantity *= 1000;
+        unit = "ml";
+      }
+      if (unit === "dosen") unit = "dose";
+
+      const key = `${unit}|${name.toLowerCase()}`;
+      const previous = totals.get(key);
+
+      if (previous) previous.quantity += quantity;
+      else totals.set(key, { name, quantity, unit });
+    }
+  }
+
+  return [...totals.values()].sort((a, b) =>
+    a.name.localeCompare(b.name, "de")
+  );
+}
+
 function renderShopping(el) {
   el.innerHTML=`
     <h2>Gemeinsame Einkaufsliste</h2>
