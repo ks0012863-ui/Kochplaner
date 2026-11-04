@@ -310,10 +310,137 @@ function renderPlan(el) {
   });
 }
 
+const starterRecipes = [
+  {
+    name: "Hähnchen-Reis-Bowl",
+    basePersons: 2,
+    ingredients: "300 g Hähnchenbrust\n150 g Reis\n300 g Brokkoli\n1 EL Öl",
+    steps: "Reis kochen. Brokkoli garen. Hähnchen klein schneiden, würzen und in Öl anbraten. Alles zusammen servieren."
+  },
+  {
+    name: "Spaghetti Bolognese",
+    basePersons: 2,
+    ingredients: "200 g Spaghetti\n250 g Rinderhackfleisch\n400 g gehackte Tomaten\n1 Zwiebel\n1 EL Öl",
+    steps: "Spaghetti kochen. Zwiebel würfeln und mit Hackfleisch anbraten. Tomaten hinzufügen, 15 Minuten köcheln lassen und mit Nudeln servieren."
+  },
+  {
+    name: "Linsen-Curry mit Reis",
+    basePersons: 2,
+    ingredients: "160 g rote Linsen\n120 g Reis\n200 ml Kokosmilch\n200 g gehackte Tomaten\n1 Zwiebel\n2 TL Currypulver",
+    steps: "Reis kochen. Zwiebel anbraten, Linsen, Tomaten, Kokosmilch, Curry und etwas Wasser zugeben. Etwa 15 Minuten köcheln lassen."
+  },
+  {
+    name: "Kartoffel-Ei-Pfanne",
+    basePersons: 2,
+    ingredients: "500 g Kartoffeln\n4 Eier\n1 Paprika\n1 Zwiebel\n1 EL Öl",
+    steps: "Kartoffeln würfeln und vorgaren. Zwiebel und Paprika schneiden. Alles anbraten, Eier darübergeben und stocken lassen."
+  },
+  {
+    name: "Hähnchen-Gemüse-Pfanne",
+    basePersons: 2,
+    ingredients: "300 g Hähnchenbrust\n400 g TK-Gemüse\n150 g Reis\n1 EL Öl\n2 EL Sojasauce",
+    steps: "Reis kochen. Hähnchen anbraten, Gemüse hinzufügen und garen. Mit Sojasauce abschmecken."
+  }
+  },
+  {
+    name: "Chili con Carne",
+    basePersons: 2,
+    ingredients: "250 g Rinderhackfleisch\n1 Dose Kidneybohnen\n1 Dose Mais\n400 g gehackte Tomaten\n1 Zwiebel\n1 TL Paprikapulver",
+    steps: "Zwiebel und Hackfleisch anbraten. Bohnen und Mais abspülen. Mit Tomaten und Gewürzen hinzufügen und 20 Minuten köcheln lassen."
+  },
+  {
+    name: "Thunfisch-Nudeln",
+    basePersons: 2,
+    ingredients: "200 g Nudeln\n1 Dose Thunfisch im eigenen Saft\n200 g passierte Tomaten\n1 Zwiebel\n100 g Erbsen",
+    steps: "Nudeln kochen. Zwiebel anbraten, Tomaten und Erbsen hinzufügen. Thunfisch unterheben und mit Nudeln vermengen."
+  },
+  {
+    name: "Gemüse-Frittata",
+    basePersons: 2,
+    ingredients: "5 Eier\n200 g Kartoffeln\n1 Paprika\n100 g Spinat\n50 g geriebener Käse",
+    steps: "Kartoffeln vorgaren und würfeln. Gemüse in einer ofenfesten Pfanne anbraten. Eier verquirlen, darübergeben und mit Käse bei 180 Grad etwa 15 Minuten fertig garen."
+  },
+  {
+    name: "Reis-Hackfleisch-Pfanne",
+    basePersons: 2,
+    ingredients: "250 g Rinderhackfleisch\n150 g Reis\n1 Paprika\n1 Zwiebel\n200 g gehackte Tomaten",
+    steps: "Reis kochen. Hackfleisch mit Zwiebel anbraten. Paprika und Tomaten hinzufügen und garen. Reis unterheben."
+  },
+  {
+    name: "Ofenkartoffeln mit Kräuterquark",
+    basePersons: 2,
+    ingredients: "600 g Kartoffeln\n300 g Magerquark\n100 g Naturjoghurt\n1 Gurke\n1 EL Öl\n1 TL Kräuter",
+    steps: "Kartoffeln in Spalten schneiden, mit Öl würzen und bei 200 Grad etwa 30 Minuten backen. Quark mit Joghurt, Kräutern und klein geschnittener Gurke verrühren."
+  },
+  {
+    name: "Kichererbsen-Curry",
+    basePersons: 2,
+    ingredients: "1 Dose Kichererbsen\n200 ml Kokosmilch\n200 g gehackte Tomaten\n120 g Reis\n1 Zwiebel\n2 TL Currypulver",
+    steps: "Reis kochen. Zwiebel anbraten. Abgespülte Kichererbsen, Tomaten, Kokosmilch und Curry hinzufügen. 15 Minuten köcheln lassen."
+  },
+  {
+    name: "Tortellini-Spinat-Pfanne",
+    basePersons: 2,
+    ingredients: "400 g frische Tortellini\n200 g TK-Spinat\n100 g Frischkäse\n1 Zwiebel\n1 EL Öl",
+    steps: "Tortellini nach Packungsangabe garen. Zwiebel anbraten, Spinat auftauen und Frischkäse einrühren. Tortellini untermischen."
+  },
+  {
+    name: "Puten-Geschnetzeltes",
+    basePersons: 2,
+    ingredients: "300 g Putenbrust\n150 g Reis\n200 g Champignons\n100 g Frischkäse\n1 Zwiebel\n1 EL Öl",
+    steps: "Reis kochen. Pute in Streifen schneiden und vollständig durchbraten. Zwiebel und Champignons hinzufügen. Frischkäse mit etwas Wasser zu einer Sauce verrühren."
+  },
+  {
+    name: "Linsen-Bolognese",
+    basePersons: 2,
+    ingredients: "180 g rote Linsen\n200 g Spaghetti\n400 g gehackte Tomaten\n1 Karotte\n1 Zwiebel\n1 EL Öl",
+    steps: "Zwiebel und Karotte anbraten. Linsen, Tomaten und etwas Wasser zugeben und etwa 15 Minuten köcheln. Spaghetti kochen und mit Sauce servieren."
+  },
+  {
+    name: "Hähnchen-Wraps",
+    basePersons: 2,
+    ingredients: "300 g Hähnchenbrust\n4 Tortilla-Wraps\n100 g Naturjoghurt\n1 Tomate\n100 g Eisbergsalat\n1 Paprika",
+    steps: "Hähnchen würzen und vollständig durchbraten. Gemüse schneiden. Wraps erwärmen, mit Joghurt bestreichen und mit Hähnchen und Gemüse füllen."
+  },
+  {
+    name: "Gemüse-Reispfanne",
+    basePersons: 2,
+    ingredients: "180 g Reis\n400 g TK-Gemüse\n2 Eier\n2 EL Sojasauce\n1 EL Öl",
+    steps: "Reis kochen. Gemüse in Öl anbraten. Reis hinzufügen. Eier unterrühren und vollständig stocken lassen. Mit Sojasauce abschmecken."
+  },
+  {
+    name: "Nudelauflauf mit Schinken",
+    basePersons: 2,
+    ingredients: "200 g Nudeln\n150 g Kochschinken\n200 g passierte Tomaten\n100 g geriebener Käse\n100 g Erbsen",
+    steps: "Nudeln vorkochen. Mit Schinken, Erbsen und Tomaten in eine Auflaufform geben. Käse darüberstreuen und bei 180 Grad etwa 20 Minuten backen."
+  },
+  {
+    name: "Kartoffel-Brokkoli-Auflauf",
+    basePersons: 2,
+    ingredients: "500 g Kartoffeln\n300 g Brokkoli\n150 g Frischkäse\n100 g geriebener Käse\n100 ml Milch",
+    steps: "Kartoffeln in Scheiben schneiden und vorgaren. Brokkoli kurz blanchieren. Frischkäse mit Milch verrühren. Alles in eine Auflaufform geben, Käse darüberstreuen und bei 190 Grad etwa 25 Minuten backen."
+  },
+  {
+    name: "Bohnen-Chili",
+    basePersons: 2,
+    ingredients: "2 Dosen Kidneybohnen\n400 g gehackte Tomaten\n1 Paprika\n1 Zwiebel\n100 g Mais\n1 TL Paprikapulver",
+    steps: "Zwiebel und Paprika anbraten. Bohnen und Mais abspülen und mit Tomaten und Gewürzen hinzufügen. Etwa 20 Minuten köcheln lassen."
+  },
+  {
+    name: "Gebratener Reis mit Ei",
+    basePersons: 2,
+    ingredients: "180 g Reis\n4 Eier\n200 g TK-Erbsen und Karotten\n2 EL Sojasauce\n1 EL Öl",
+    steps: "Reis kochen und etwas abkühlen lassen. Gemüse anbraten, Reis hinzufügen. Eier einrühren und vollständig stocken lassen. Mit Sojasauce würzen."
+  }
+];
+
+
 function renderRecipes(el) {
   el.innerHTML = `
     <h2>Unsere Rezepte</h2>
-    
+  
+<button type="button" id="importRecipes">Starterrezepte hinzufügen</button>
+  
 <p>Lege fest, für wie viele Personen das Rezept ursprünglich gedacht ist.</p>
 <label for="basePersons">Rezept für wie viele Personen?</label>
 <input
@@ -377,6 +504,44 @@ el.querySelectorAll("[data-recipe-persons]").forEach(input => {
     }
   };
 });
+
+document.getElementById("importRecipes").onclick = async () => {
+  const importButton = document.getElementById("importRecipes");
+  importButton.disabled = true;
+  importButton.textContent = "Rezepte werden hinzugefügt ...";
+
+  try {
+    const existingNames = new Set(
+      recipes.map(r => r.name.trim().toLowerCase())
+    );
+
+    let added = 0;
+
+    for (const recipe of starterRecipes) {
+      if (existingNames.has(recipe.name.toLowerCase())) continue;
+
+      await addDoc(
+        collection(db, "households", householdId, "recipes"),
+        {
+          ...recipe,
+          createdAt: serverTimestamp()
+        }
+      );
+
+      existingNames.add(recipe.name.toLowerCase());
+      added++;
+    }
+
+    alert(`${added} neue Rezepte hinzugefügt!`);
+  } catch (error) {
+    showError(error);
+  } finally {
+    if (importButton.isConnected) {
+      importButton.disabled = false;
+      importButton.textContent = "Starterrezepte hinzufügen";
+    }
+  }
+};
 
   document.getElementById("recipeForm").onsubmit=async e=>{
     e.preventDefault();
