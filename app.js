@@ -340,7 +340,7 @@ const starterRecipes = [
     basePersons: 2,
     ingredients: "300 g Hähnchenbrust\n400 g TK-Gemüse\n150 g Reis\n1 EL Öl\n2 EL Sojasauce",
     steps: "Reis kochen. Hähnchen anbraten, Gemüse hinzufügen und garen. Mit Sojasauce abschmecken."
-  }
+  
   },
   {
     name: "Chili con Carne",
