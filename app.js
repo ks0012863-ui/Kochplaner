@@ -701,15 +701,26 @@ function renderShopping(el) {
     <ul class="shopping-list">
       ${weeklyIngredients.length
         ? weeklyIngredients.map(item => `
-          <li>
-            <span>
-              ${escapeHTML(
-                item.unit === "Eintrag"
-                  ? `${item.quantity} × ${item.name}`
-                  : `${item.quantity.toLocaleString("de-DE")} ${item.unit} ${item.name}`
-              )}
-            </span>
-          </li>
+          
+<li>
+  <input
+    type="checkbox"
+    data-weekly-check="${escapeHTML(weeklyIngredientId(item))}"
+    ${shopping.some(x =>
+      x.source === "weekly" &&
+      x.weeklyKey === weeklyIngredientId(item) &&
+      x.checked
+    ) ? "checked" : ""}
+  >
+  <span>
+    ${escapeHTML(
+      item.unit === "Eintrag"
+        ? `${item.quantity} × ${item.name}`
+        : `${item.quantity.toLocaleString("de-DE")} ${item.unit} ${item.name}`
+    )}
+  </span>
+</li>
+
         `).join("")
         : "<li>Wähle zuerst Gerichte im Wochenplan aus.</li>"
       }
@@ -732,6 +743,18 @@ function renderShopping(el) {
           ${button("Entfernen","delete-item",`data-id="${escapeHTML(x.id)}"`)}
         </li>`).join("")}
     </ul>`;
+
+el.querySelectorAll("[data-weekly-check]").forEach(box => {
+  box.onchange = async () => {
+    const item = getWeeklyIngredients().find(
+      x => weeklyIngredientId(x) === box.dataset.weeklyCheck
+    );
+
+    if (item) {
+      await toggleWeeklyIngredient(item, box.checked);
+    }
+  };
+});
 
   document.getElementById("addItem").onsubmit=async e=>{
     e.preventDefault();
