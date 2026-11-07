@@ -1,4 +1,6 @@
 
+import { createWorker } from "https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.esm.min.js";
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import {
   getAuth, createUserWithEmailAndPassword,
