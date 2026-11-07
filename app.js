@@ -694,6 +694,10 @@ function getWeeklyIngredients() {
 function renderShopping(el) {
   const weeklyIngredients = getWeeklyIngredients();
 
+  const manualShopping = shopping.filter(
+    item => item.source !== "weekly"
+  );
+
   el.innerHTML=`
     <h2>Automatisch aus deinem Wochenplan</h2>
     <p>Diese Zutaten werden aus den ausgewählten Gerichten und Personenzahlen berechnet.</p>
@@ -733,9 +737,13 @@ function renderShopping(el) {
       <input name="quantity" placeholder="Menge, z. B. 2 Liter">
       <button type="submit">Artikel hinzufügen</button>
     </form>
-    <p>${shopping.filter(x=>x.checked).length} von ${shopping.length} erledigt</p>
+  
+<p>${manualShopping.filter(x=>x.checked).length} von ${manualShopping.length} erledigt</p>
+
     <ul class="shopping-list">
-      ${shopping.sort((a,b)=>Number(a.checked)-Number(b.checked)).map(x=>`
+
+${manualShopping.sort((a,b)=>Number(a.checked)-Number(b.checked)).map(x=>`
+
         <li>
           <input type="checkbox" data-check="${escapeHTML(x.id)}"
             ${x.checked?"checked":""}>
