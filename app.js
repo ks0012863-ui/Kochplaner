@@ -441,6 +441,20 @@ function renderRecipes(el) {
   el.innerHTML = `
     <h2>Unsere Rezepte</h2>
   
+<h3>Rezept per Foto hinzufügen</h3>
+<p>Fotografiere eine Rezeptkarte oder wähle ein Bild aus deiner Galerie.</p>
+
+<label for="recipePhoto">Rezeptkarte auswählen:</label>
+<input
+  type="file"
+  id="recipePhoto"
+  accept="image/*"
+>
+<button type="button" id="scanRecipe">
+  Rezeptkarte erkennen
+</button>
+<p id="scanStatus"></p>
+
 <button type="button" id="importRecipes">Starterrezepte hinzufügen</button>
   
 <p>Lege fest, für wie viele Personen das Rezept ursprünglich gedacht ist.</p>
