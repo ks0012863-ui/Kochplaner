@@ -521,6 +521,55 @@ el.querySelectorAll("[data-recipe-persons]").forEach(input => {
   };
 });
 
+document.getElementById("scanRecipe").onclick = async () => {
+  const fileInput = document.getElementById("recipePhoto");
+  const status = document.getElementById("scanStatus");
+  const scanButton = document.getElementById("scanRecipe");
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Bitte zuerst ein Foto auswählen.");
+    return;
+  }
+
+  scanButton.disabled = true;
+  status.textContent = "Bilderkennung wird gestartet ...";
+
+  let worker;
+
+  try {
+    worker = await createWorker("deu");
+
+    status.textContent = "Rezeptkarte wird gelesen ...";
+
+    const result = await worker.recognize(file);
+    const recognizedText = result.data.text.trim();
+
+    if (!recognizedText) {
+      throw new Error("Auf dem Foto wurde kein Text erkannt.");
+    }
+
+    const form = document.getElementById("recipeForm");
+
+    if (!form) {
+      throw new Error("Rezeptformular nicht gefunden.");
+    }
+
+    form.elements.ingredients.value = recognizedText;
+
+    status.textContent =
+      "Text erkannt! Bitte Zutaten prüfen und die Felder ergänzen.";
+
+  } catch (error) {
+    status.textContent = "Bilderkennung fehlgeschlagen.";
+    showError(error);
+  } finally {
+    if (worker) await worker.terminate();
+    scanButton.disabled = false;
+  }
+};
+
 document.getElementById("importRecipes").onclick = async () => {
   const importButton = document.getElementById("importRecipes");
   importButton.disabled = true;
