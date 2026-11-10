@@ -539,7 +539,12 @@ document.getElementById("scanRecipe").onclick = async () => {
   let worker;
 
   try {
-    worker = await createWorker("deu");
+    
+const tesseract = await import(
+  "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/+esm"
+);
+worker = await tesseract.createWorker("deu");
+
 
     status.textContent = "Rezeptkarte wird gelesen ...";
 
