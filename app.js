@@ -437,6 +437,38 @@ const starterRecipes = [
 ];
 
 
+function getImportedRecipe() {
+  const params = new URLSearchParams(window.location.search);
+  const encoded = params.get("recipe");
+
+  if (!encoded) return null;
+
+  try {
+    const recipe = JSON.parse(encoded);
+
+    if (
+      typeof recipe.name !== "string" ||
+      typeof recipe.ingredients !== "string" ||
+      typeof recipe.steps !== "string"
+    ) {
+      throw new Error("Ungültige Rezeptdaten.");
+    }
+
+    return {
+      name: recipe.name,
+      ingredients: recipe.ingredients,
+      steps: recipe.steps,
+      basePersons: Math.min(
+        12,
+        Math.max(1, Number(recipe.basePersons) || 2)
+      )
+    };
+  } catch (error) {
+    console.error("Rezeptimport fehlgeschlagen:", error);
+    return null;
+  }
+}
+
 function renderRecipes(el) {
   el.innerHTML = `
     <h2>Unsere Rezepte</h2>
