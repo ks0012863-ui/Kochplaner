@@ -563,7 +563,11 @@ if (recipeSearch) {
       const recipeText = card.dataset.search || "";
       const matches = recipeText.includes(searchText);
 
-      card.style.display = matches ? "" : "none";
+      card.style.setProperty(
+  "display",
+  matches ? "block" : "none",
+  "important"
+);
 
       if (matches) visibleCount++;
     });
