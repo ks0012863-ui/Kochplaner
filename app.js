@@ -473,6 +473,17 @@ function renderRecipes(el) {
   el.innerHTML = `
     <h2>Unsere Rezepte</h2>
   
+<div style="margin: 15px 0;">
+  <input
+    type="search"
+    id="recipeSearch"
+    placeholder="🔍 Rezept suchen ..."
+    autocomplete="off"
+    style="width:100%;padding:12px;font-size:16px;"
+  >
+  <p id="recipeSearchCount"></p>
+</div>
+
 <h3>Rezept per Foto hinzufügen</h3>
 <p>Fotografiere eine Rezeptkarte oder wähle ein Bild aus deiner Galerie.</p>
 
