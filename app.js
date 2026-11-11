@@ -544,6 +544,42 @@ ${recipes.map(r=>`<article class="recipe" data-search="${escapeHTML((r.name + " 
       ${button("Löschen","delete-recipe",`data-id="${escapeHTML(r.id)}"`)}
     </article>`).join("")}`;
 
+const recipeSearch = document.getElementById("recipeSearch");
+const recipeSearchCount = document.getElementById("recipeSearchCount");
+
+if (recipeSearch) {
+  const recipeCards = Array.from(
+    el.querySelectorAll("article.recipe")
+  );
+
+  function filterRecipes() {
+    const searchText = recipeSearch.value
+      .trim()
+      .toLocaleLowerCase("de");
+
+    let visibleCount = 0;
+
+    recipeCards.forEach(card => {
+      const recipeText = card.dataset.search || "";
+      const matches = recipeText.includes(searchText);
+
+      card.style.display = matches ? "" : "none";
+
+      if (matches) visibleCount++;
+    });
+
+    if (recipeSearchCount) {
+      recipeSearchCount.textContent =
+        visibleCount === 1
+          ? "1 Rezept gefunden"
+          : `${visibleCount} Rezepte gefunden`;
+    }
+  }
+
+  recipeSearch.addEventListener("input", filterRecipes);
+  filterRecipes();
+}
+
 el.querySelectorAll("[data-recipe-persons]").forEach(input => {
   input.oninput = () => {
     const recipe = recipes.find(r => r.id === input.dataset.recipePersons);
