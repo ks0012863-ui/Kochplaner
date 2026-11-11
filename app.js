@@ -522,7 +522,9 @@ function renderRecipes(el) {
       <button type="submit">Rezept speichern</button>
     </form>
     <hr>
-    ${recipes.map(r=>`<article class="recipe">
+   
+${recipes.map(r=>`<article class="recipe" data-search="${escapeHTML((r.name + " " + r.ingredients).toLowerCase())}">
+
       <h3>${escapeHTML(r.name)}</h3>
     
 <label>Personen:</label>
