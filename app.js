@@ -645,6 +645,25 @@ document.getElementById("importRecipes").onclick = async () => {
   }
 };
 
+const importedRecipe = getImportedRecipe();
+
+if (importedRecipe) {
+  const form = document.getElementById("recipeForm");
+
+  form.elements.name.value = importedRecipe.name;
+  form.elements.ingredients.value = importedRecipe.ingredients;
+  form.elements.steps.value = importedRecipe.steps;
+  form.elements.basePersons.value = importedRecipe.basePersons;
+
+  // Importdaten aus der Adresse entfernen,
+  // damit sie beim nächsten Laden nicht erneut erscheinen.
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.searchParams.delete("recipe");
+  window.history.replaceState({}, "", cleanUrl.toString());
+
+  alert("Rezept aus ChatGPT übernommen! Bitte prüfen und speichern.");
+}
+
   document.getElementById("recipeForm").onsubmit=async e=>{
     e.preventDefault();
     const f=e.target;
